@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import {ERC20Pausable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
-import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+/* OpenZeppelin v5.4.0 (raw URLs for Remix) */
+import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/v5.4.0/contracts/token/ERC20/ERC20.sol";
+import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/v5.4.0/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/v5.4.0/contracts/token/ERC20/extensions/ERC20Pausable.sol";
+import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/v5.4.0/contracts/token/ERC20/extensions/ERC20Permit.sol";
+import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/v5.4.0/contracts/access/Ownable.sol";
 
 /// @custom:security-contact security@togethermining.xyz
 contract TogetherMining is ERC20, ERC20Burnable, ERC20Pausable, ERC20Permit, Ownable {
@@ -14,7 +15,7 @@ contract TogetherMining is ERC20, ERC20Burnable, ERC20Pausable, ERC20Permit, Own
     bool public tradingOpen = false;
 
     event TradingOpened();
-    event TradingClosed(); // New event for clarity
+    event TradingClosed();
     event TreasuryUpdated(address indexed treasury);
     event CrowdsaleUpdated(address indexed crowdsale);
 
@@ -28,8 +29,6 @@ contract TogetherMining is ERC20, ERC20Burnable, ERC20Pausable, ERC20Permit, Own
         _mint(_treasury, 1_000_000_000 * 10 ** decimals());
         emit TreasuryUpdated(_treasury);
     }
-
-    // --- Admin ---
 
     function setTreasury(address _treasury) external onlyOwner {
         require(_treasury != address(0), "treasury=0");
@@ -55,19 +54,12 @@ contract TogetherMining is ERC20, ERC20Burnable, ERC20Pausable, ERC20Permit, Own
         emit TradingClosed();
     }
 
-    function pause() external onlyOwner { 
-        _pause(); 
-    }
-    
-    function unpause() external onlyOwner { 
-        _unpause(); 
-    }
+    function pause() external onlyOwner { _pause(); }
+    function unpause() external onlyOwner { _unpause(); }
 
-    function mint(address to, uint256 amount) external onlyOwner { 
-        _mint(to, amount); 
-    }
+    function mint(address to, uint256 amount) external onlyOwner { _mint(to, amount); }
 
-    // --- Transfer gate ---
+    // Transfer gate while trading is closed:
     function _update(address from, address to, uint256 value)
         internal
         override(ERC20, ERC20Pausable)
@@ -76,7 +68,6 @@ contract TogetherMining is ERC20, ERC20Burnable, ERC20Pausable, ERC20Permit, Own
             bool allowed = (from == treasury && to == crowdsale) || (from == crowdsale);
             require(allowed, "Transfers locked");
         }
-
         super._update(from, to, value);
     }
 }
